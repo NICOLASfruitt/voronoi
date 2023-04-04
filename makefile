@@ -1,6 +1,6 @@
 all: debug
 
-debug: main.o glad.o voronoi.o structs.o
+debug: main.o glad.o voronoi.o structs.o shaders.o
 	gcc -Wall -g -o build/debug build/*.o -lglfw -lm
 
 main.o:
@@ -17,3 +17,6 @@ structs.o:
 
 pq.o:
 	gcc -c -o build/pq.o src/priority_queue/pq.c
+
+shaders.o:
+	gcc -c -o build/shaders.o src/shaders.c
