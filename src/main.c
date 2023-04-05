@@ -10,8 +10,9 @@
 
 #define SIZE 800
 
-void test();
+double* test(Point* sites, int n, int* e_n);
 Point* gen_sites(int n);
+double* concat(double* a, double* b, int n, int m);
 
 
 
@@ -33,16 +34,28 @@ int main() {
 
   glViewport(0, 0, SIZE, SIZE);
 
+  //Point a = { 5.23, 9.69 };
+  //Point b = { 6.41, 5.9 };
+  //Point c = { 2.2, 3.4 };
+  //Point sites[] = { a, b, c };
+  //int n = 3;
+
   int n = 10;
   Point* sites = gen_sites(n);
-  double* vertices = malloc(2*n*sizeof(double));
+  double* points = malloc(2*n*sizeof(double));
   for (int i = 0; i < n; i++) {
-    vertices[2*i] = sites[i].x;
-    vertices[2*i+1] = sites[i].y;
+    points[2*i] = sites[i].x;
+    points[2*i+1] = sites[i].y;
     //printf("(%f, %f)\n", sites[i].x, sites[i].y);
   }
+
+  int m;
+  double* edges = test(sites, n, &m);
+  printf("m = %d\n", m);
+
+  double* vertices = concat(points, edges, n, m);
   
-  float m[] = {
+  float mat[] = {
     .02, 0., -1.,
     0., .02, -1.,
     0., 0., 0.,
@@ -55,7 +68,7 @@ int main() {
   GLuint VBO;
   glGenBuffers(1, &VBO);
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, n*2*sizeof(double), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, (n+m)*2*sizeof(double), vertices, GL_STATIC_DRAW);
 
   GLuint program = createBasicProgram(vertex_source, fragment_source);
 
@@ -72,11 +85,14 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(program);
-    glUniformMatrix3fv(mLoc, 1, GL_TRUE, m);
+    glUniformMatrix3fv(mLoc, 1, GL_TRUE, mat);
     glUniform4f(colorLoc, 1.0, 0.0, 0.0, 1.0);
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_POINTS, 0, n);
+
+    glUniform4f(colorLoc, 0.0, 1.0, 0.2, 1.0);
+    glDrawArrays(GL_LINES, n, m);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -88,26 +104,28 @@ int main() {
 
 
 
-void test() {
-  //Point a = { 5.23, 9.69 };
-  //Point b = { 6.41, 5.9 };
-  //Point c = { 2.2, 3.4 };
-  //Point sites[] = { a, b, c };
+double* test(Point* sites, int n, int* e_n) {
 
-  int n = 5;
-  Point* sites = gen_sites(n);
+
   Voronoi* v = v_new(sites, n);
   v_compute(v);
+
+  *e_n = v->closed_edges->next;
+  double* edges = malloc(4*(*e_n)*sizeof(double));
 
   printf("\nEDGES\n");
   for (int i = 0; i < v->closed_edges->next; i++) {
     Edge* e = v->closed_edges->arr[i];
+    edges[4*i+0] = e->start->x;
+    edges[4*i+1] = e->start->y;
+    edges[4*i+2] = e->end->x;
+    edges[4*i+3] = e->end->y;
     printf("(%f, %f), ", e->start->x, e->start->y);
-    if (e->end)
-      printf("(%f, %f)\n", e->end->x, e->end->y);
-    else
-      printf("NULL\n");
+    printf("(%f, %f)\n", e->end->x, e->end->y);
   }
+
+  *e_n = 2*(*e_n);
+  return edges;
 }
 
 Point* gen_sites(int n) {
@@ -120,4 +138,13 @@ Point* gen_sites(int n) {
     sites[i] = p;
   }
   return sites;
+}
+
+double* concat(double* a, double* b, int n, int m) {
+  double* c = malloc((n+m)*sizeof(double));
+  for (int i = 0; i < n; i++)
+    c[i] = a[i];
+  for (int i = 0; i < m; i++)
+    c[i+n] = b[i];
+  return c;
 }

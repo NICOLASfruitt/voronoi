@@ -42,20 +42,20 @@ Voronoi* v_new(Point* sites, int len) {
 
 void v_compute(Voronoi* v) {
   while (!pq_is_empty(v->pq)) {
-    display_beachline(v);
+    //display_beachline(v);
 
     Event* e = pq_pop(v->pq);
     v->y = e->p.y;
     if (e->type == Site) {
-      printf("Site (%6.2f, %6.2f)\n", e->p.x, e->p.y);
+      //printf("Site (%6.2f, %6.2f)\n", e->p.x, e->p.y);
       v_add_arc(v, e->p);
     }
     else if (!vec_has_ev(v->deleted, e)){ // jsp si définitif
-      printf("Circle (%6.2f, %6.2f)\n", e->p.x, e->p.y);
+      //printf("Circle (%6.2f, %6.2f)\n", e->p.x, e->p.y);
       v_remove_arc(v, e->p, e->arc);
     }
   }
-  display_beachline(v);
+  //display_beachline(v);
 }
 
 
@@ -89,7 +89,6 @@ void v_add_arc(Voronoi* v, Point p) {
   vec_push_edge(v->edges, arc->edge);
   vec_push_edge(v->edges, arc->left->edge);
 
-  display_beachline(v);
   v_circle_events(v, a);
   v_circle_events(v, b);
   v_circle_events(v, c);
