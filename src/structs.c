@@ -42,6 +42,8 @@ Edge* edge_new() {
   Edge* e = malloc(sizeof(Edge));
   e->start = NULL;
   e->end = NULL;
+  e->dir = NULL;
+  e->twin = NULL;
   return e;
 }
 

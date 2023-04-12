@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 
 #include "voronoi.h"
 #include "shaders.h"
@@ -34,14 +35,14 @@ int main() {
 
   glViewport(0, 0, SIZE, SIZE);
 
-  //Point a = { 5.23, 9.69 };
-  //Point b = { 6.41, 5.9 };
-  //Point c = { 2.2, 3.4 };
-  //Point sites[] = { a, b, c };
-  //int n = 3;
+  Point a = { 5.23, 9.69 };
+  Point b = { 6.41, 5.9 };
+  Point c = { 2.2, 3.4 };
+  Point sites[] = { a, b, c };
+  int n = 3;
 
-  int n = 10;
-  Point* sites = gen_sites(n);
+  //int n = 10;
+  //Point* sites = gen_sites(n);
   double* points = malloc(2*n*sizeof(double));
   for (int i = 0; i < n; i++) {
     points[2*i] = sites[i].x;
@@ -51,9 +52,8 @@ int main() {
 
   int m;
   double* edges = test(sites, n, &m);
-  printf("m = %d\n", m);
 
-  double* vertices = concat(points, edges, n, m);
+  double* vertices = concat(points, edges, 2*n, 2*m);
   
   float mat[] = {
     .02, 0., -1.,
@@ -78,7 +78,7 @@ int main() {
   GLint mLoc = glGetUniformLocation(program, "m");
   GLint colorLoc = glGetUniformLocation(program, "color");
   
-  glPointSize(10.);
+  glPointSize(4.);
 
   while (!glfwWindowShouldClose(window)) {
     glClearColor(0.2, 0.2, 0.2, 1.0);
@@ -104,18 +104,64 @@ int main() {
 
 
 
+void disp_edge(Edge* e) {
+  assert(e);
+
+  if (e->start)
+    printf("(%f, %f), ", e->start->x, e->start->y);
+  else
+    printf("NULL, ");
+  printf("(%f, %f), ", e->dir->x, e->dir->y);
+  if (e->end)
+    printf("(%f, %f)\n", e->end->x, e->end->y);
+  else
+    printf("NULL\n");
+}
+
+void _close(Point* p, Point* dir, Point* t) {
+  assert(dir->x != 0. && dir->y != 0.);
+
+  if (dir->x != 0.) {
+  }
+  else {
+
+  }
+}
+
+Edge** close_edges(Edge** edges, int n) {
+  int m = n;
+  for (int i = 0; i < n; i++) {
+    Edge* e = edges[i];
+
+    if (e->twin) {
+      m += 1;
+      if (!e->end) {
+
+      }
+      else {
+
+      }
+    }
+    else {
+
+    }
+  }
+}
+
 double* test(Point* sites, int n, int* e_n) {
-
-
   Voronoi* v = v_new(sites, n);
   v_compute(v);
+  *e_n = v->edges->next;
 
-  *e_n = v->closed_edges->next;
   double* edges = malloc(4*(*e_n)*sizeof(double));
 
   printf("\nEDGES\n");
-  for (int i = 0; i < v->closed_edges->next; i++) {
-    Edge* e = v->closed_edges->arr[i];
+  for (int i = 0; i < v->edges->next; i++) {
+    Edge* e = v->edges->arr[i];
+    disp_edge(e); 
+    continue;
+    // CLOSE EDGES 
+    // sinon seg fault
     edges[4*i+0] = e->start->x;
     edges[4*i+1] = e->start->y;
     edges[4*i+2] = e->end->x;

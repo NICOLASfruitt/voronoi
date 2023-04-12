@@ -10,6 +10,8 @@
 #define LOGP(p) printf(#p "   (%6.2f, %6.2f)\n", p.x, p.y);
 
 
+// Faire le traitement bords/edges dans les 2 sens
+
 
 void v_add_arc(Voronoi* v, Point p);
 void v_remove_arc(Voronoi* v, Point point, Arc* par);
@@ -28,7 +30,6 @@ Voronoi* v_new(Point* sites, int len) {
   v->pq = pq_new();
   v->deleted = vec_new_ev();
   v->edges = vec_new_edge();
-  v->closed_edges = vec_new_edge();
   v->beachline = NULL;
 
   for (int i = 0; i < len; i++) {
@@ -47,13 +48,15 @@ void v_compute(Voronoi* v) {
     Event* e = pq_pop(v->pq);
     v->y = e->p.y;
     if (e->type == Site) {
-      //printf("Site (%6.2f, %6.2f)\n", e->p.x, e->p.y);
+      printf("Site (%6.2f, %6.2f)\n", e->p.x, e->p.y);
       v_add_arc(v, e->p);
     }
     else if (!vec_has_ev(v->deleted, e)){ // jsp si définitif
-      //printf("Circle (%6.2f, %6.2f)\n", e->p.x, e->p.y);
+      printf("Circle (%6.2f, %6.2f)\n", e->p.x, e->p.y);
       v_remove_arc(v, e->p, e->arc);
     }
+
+    printf("nb = %d\n", v->edges->next);
   }
   //display_beachline(v);
 }
@@ -85,9 +88,14 @@ void v_add_arc(Voronoi* v, Point p) {
   // nouveaux segments
   Point* i = point_from(p.x, eval_par(arc->focus, v->y, p.x));
   arc->edge->start = i;
+  arc->edge->dir = point_from(0., 0.);
   arc->left->edge->start = i;
+  arc->left->edge->dir = point_from(0., 0.);
+
+  arc->edge->twin = arc->left->edge;
+  arc->left->edge->twin = arc->edge;
   vec_push_edge(v->edges, arc->edge);
-  vec_push_edge(v->edges, arc->left->edge);
+  //vec_push_edge(v->edges, arc->left->edge);
 
   v_circle_events(v, a);
   v_circle_events(v, b);
@@ -126,11 +134,12 @@ void v_remove_arc(Voronoi* v, Point point, Arc* a) {
   Edge* er = p_right->edge;
   el->end = i;
   er->end = i;
-  vec_push_edge(v->closed_edges, el);
-  vec_push_edge(v->closed_edges, er);
+  //vec_push_edge(v->edges, el);
+  //vec_push_edge(v->edges, er);
  
   // nouveau segment
   Edge* e = edge_new();
+  e->dir = i;
   e->start = i;
   Arc* higher;
   Arc* c = a;

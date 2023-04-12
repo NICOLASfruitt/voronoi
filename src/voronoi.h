@@ -11,7 +11,6 @@ struct Voronoi {
   PriorityQueue* pq; // Event queue
   Vec_ev* deleted;
   Vec_edge* edges;
-  Vec_edge* closed_edges;
   Arc* beachline;
 };
 

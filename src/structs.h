@@ -44,6 +44,8 @@ struct Point {
 struct Edge {
   Point* start;
   Point* end;
+  Point* dir;
+  Edge* twin;
 };
 
 struct Arc {
