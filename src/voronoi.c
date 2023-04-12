@@ -7,11 +7,7 @@
 #include "structs.h"
 #include "voronoi.h"
 
-#define LOGP(p) printf(#p "   (%6.2f, %6.2f)\n", p.x, p.y);
-
-
 // Faire le traitement bords/edges dans les 2 sens
-
 
 void v_add_arc(Voronoi* v, Point p);
 void v_remove_arc(Voronoi* v, Point point, Arc* par);
@@ -21,7 +17,6 @@ double eval_par(Point f, double y, double x);
 Point par_intercept(Point a, Point b, double y);
 bool line_intercept(Point* i, Point a, Point u, Point b, Point v);
 double dist(Point a, Point b);
-
 
 
 Voronoi* v_new(Point* sites, int len) {
@@ -38,7 +33,6 @@ Voronoi* v_new(Point* sites, int len) {
   }
   return v;
 }
-
 
 
 void v_compute(Voronoi* v) {
@@ -60,7 +54,6 @@ void v_compute(Voronoi* v) {
   }
   //display_beachline(v);
 }
-
 
 
 void v_add_arc(Voronoi* v, Point p) {
@@ -101,7 +94,6 @@ void v_add_arc(Voronoi* v, Point p) {
   v_circle_events(v, b);
   v_circle_events(v, c);
 }
-
 
 
 void v_remove_arc(Voronoi* v, Point point, Arc* a) {
@@ -175,7 +167,6 @@ void v_remove_arc(Voronoi* v, Point point, Arc* a) {
 }
 
 
-
 void v_circle_events(Voronoi* v, Arc* a) {
   Arc* p_left = arc_lmr_of(a);
   Arc* p_right = arc_rml_of(a);
@@ -215,7 +206,6 @@ void v_circle_events(Voronoi* v, Arc* a) {
 }
 
 
-
 Arc* get_arc(Voronoi* v, double x) {
   Arc* c = v->beachline;
   while (c && c->left && c->right) { // c->left ssi c->right normalement
@@ -229,12 +219,10 @@ Arc* get_arc(Voronoi* v, double x) {
 }
 
 
-
 double eval_par(Point f, double y, double x) {
   // points à égale distance entre F et la droite y (parabole)
   return (x - f.x)*(x - f.x)/(2.*(f.y - y)) + (f.y + y)/2.;
 }
-
 
 
 Point par_intercept(Point a, Point b, double y) {
@@ -260,7 +248,6 @@ Point par_intercept(Point a, Point b, double y) {
 }
 
 
-
 bool line_intercept(Point* i, Point a, Point u, Point b, Point v) {
   // résout A + pU = B + qV
   // renvoie true si i est modifié
@@ -276,11 +263,9 @@ bool line_intercept(Point* i, Point a, Point u, Point b, Point v) {
 }
 
 
-
 double dist(Point a, Point b) {
   return sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
 }
-
 
 
 void display_rec(Arc* c, int pad, const char* prefix) {
@@ -295,7 +280,6 @@ void display_rec(Arc* c, int pad, const char* prefix) {
   else
     printf("\n");
 }
-
 
 
 void display_beachline(Voronoi* v) {

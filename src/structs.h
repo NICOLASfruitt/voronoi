@@ -3,13 +3,10 @@
 
 #include <stdlib.h>
 
-
-
 typedef struct Point Point;
 typedef struct Edge Edge;
 typedef struct Arc Arc;
 typedef struct Event Event;
-
 
 #define T1 Event*
 #define E1 ev
@@ -34,7 +31,7 @@ typedef struct Event Event;
 #undef  V
 #undef  P
 
-
+#define LOGP(p) printf(#p "   (%6.2f, %6.2f)\n", p.x, p.y);
 
 struct Point {
   double x;
@@ -67,8 +64,6 @@ struct Event {
   Arc* arc;
   enum EventType type;
 };
-
-
 
 Point* point_from(double x, double y);
 Edge* edge_new();
